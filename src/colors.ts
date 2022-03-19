@@ -22,7 +22,7 @@ interface ColorIdIndex {
 }
 
 interface ColorNameIndex {
-  [name: string]: Color[];
+  [name: string]: Color;
 }
 
 let colors: Color[] = [];
@@ -75,16 +75,18 @@ export function getColorsByIdOrName(colorToFind: number | string) {
     return colorNameIndex[colorToFind];
   }
 
-  const color = colors.filter(
+  const color = colors.find(
     ({ colorId, name }) =>
-      (isColorToFindId && colorId === colorToFind) || name === colorToFind
+      (isColorToFindId && colorId === colorToFind) || name.toLowerCase() === colorToFind
   );
 
   if (color) {
     if (isColorToFindId) {
-      colorIdIndex[colorToFind] = color[0];
+      colorIdIndex[colorToFind] = color;
+      return color;
     } else {
       colorNameIndex[colorToFind] = color;
+      return color;
     }
   }
 
