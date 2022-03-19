@@ -18,11 +18,12 @@
     "eslint-plugin-import": "^2.25.4",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
-    "ts-loader": "^9.2.6"
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.7.0"
   },
   "scripts": {
     "build": "tsc && node dist/index.js",
-    "start": "nodemon -e ts --exec \"yarn build\""
+    "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/index.ts\""
   },
   "dependencies": {
     "dotenv": "^16.0.0",
