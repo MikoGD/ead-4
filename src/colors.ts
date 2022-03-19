@@ -17,16 +17,30 @@ export interface Color {
   name: string;
 }
 
+interface ColorIdIndex {
+  [id: number]: Color;
+}
+
+interface ColorNameIndex {
+  [name: string]: Color[];
+}
+
 let colors: Color[] = [];
 
+const colorIdIndex: ColorIdIndex = {};
+const colorNameIndex: ColorNameIndex = {};
+
 function loadColorsJSON() {
-  const colorsPath = path.resolve(__dirname, process.env.COLORS_PATH ?? '');
+  const colorsPath = path.resolve(
+    __dirname,
+    `../${process.env.COLORS_PATH}` ?? ''
+  );
   const colorsFile = fs.readFileSync(colorsPath);
 
   colors = JSON.parse(String(colorsFile));
 }
 
-export function getAllColors() {
+export function getColors() {
   return colors;
 }
 
@@ -50,6 +64,31 @@ export function updateColor(colorId: number, updatedColor: Color) {
   colors[colorToUpdateIndex] = { ...colorToUpdate, ...updatedColor };
 
   return true;
+}
+
+export function getColorsByIdOrName(colorToFind: number | string) {
+  const isColorToFindId = typeof colorToFind === 'number';
+
+  if (isColorToFindId && colorIdIndex[colorToFind]) {
+    return colorIdIndex[colorToFind];
+  } else if (colorNameIndex[colorToFind]) {
+    return colorNameIndex[colorToFind];
+  }
+
+  const color = colors.filter(
+    ({ colorId, name }) =>
+      (isColorToFindId && colorId === colorToFind) || name === colorToFind
+  );
+
+  if (color) {
+    if (isColorToFindId) {
+      colorIdIndex[colorToFind] = color[0];
+    } else {
+      colorNameIndex[colorToFind] = color;
+    }
+  }
+
+  return color;
 }
 
 loadColorsJSON();

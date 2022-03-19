@@ -1,18 +1,16 @@
 import express from 'express';
 import morgan from 'morgan';
-import fs from 'fs';
-import path from 'path';
 import 'dotenv/config';
-import loadColorsJSON from './utils';
+import routes from './routes';
 
-const server = express();
+export const app = express();
 
-const colors = loadColorsJSON();
+// Middleware
+// TODO: Use env variables to change morgan config to prod or dev
+app.use(express.json());
+app.use(morgan('dev'));
 
-server.use(morgan('dev'));
+// Routes
+app.use('/', routes);
 
-server.get('/', (_, res) => {
-  res.status(200).json({ message: 'ok', data: colors });
-});
-
-server.listen(process.env.PORT);
+app.listen(process.env.PORT, () => console.log('server running'));
