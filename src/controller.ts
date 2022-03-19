@@ -1,25 +1,38 @@
 import { Request, Response } from 'express';
-import { getColors, getColorsByIdOrName } from './colors';
+import { getColors, getColorsById, getColorsByName } from './colors';
+import { ColorsParams } from './types';
 
-interface ColorsParams {
-  id: string;
-}
-
-export function getAllColors(_: Request, res: Response) {
+export function sendAllColors(_: Request, res: Response) {
   res.status(200).json({ message: 'ok', data: getColors() });
 }
 
-export function getColorById(req: Request<ColorsParams>, res: Response) {
-  const colorId = isNaN(Number(req.params.id))
-    ? req.params.id.toLowerCase()
-    : Number(req.params.id);
+export function sendColorById(req: Request<ColorsParams>, res: Response) {
+  const id = Number(req.params.id);
 
-  const colors = getColorsByIdOrName(colorId);
-
-  if (!colors || (Array.isArray(colors) && colors.length === 0)) {
-    res.status(404).json({ error: `could not find color: ${colorId}` });
+  if (id === NaN) {
+    res.status(404).json({ error: `invalid color id: ${id}` });
     return;
   }
-  
-  res.status(200).json({ message: 'ok', data: colors });
+
+  const color = getColorsById(id);
+
+  if (!color) {
+    res.status(404).json({ error: `could not find color: ${id}` });
+    return;
+  }
+
+  res.status(200).json({ message: 'ok', data: color });
+}
+
+export function sendColorByName(req: Request<ColorsParams>, res: Response) {
+  const { name } = req.params;
+
+  const color = getColorsByName(name);
+
+  if (!color) {
+    res.status(404).json({ error: `could not find color: ${name}` });
+    return;
+  }
+
+  res.status(200).json({ message: 'ok', data: color });
 }

@@ -41,7 +41,7 @@ function loadColorsJSON() {
     const { colorId, name } = color;
 
     colorsIndex[colorId] = color;
-    colorsNameIndex[name] = color;
+    colorsNameIndex[name.toLowerCase()] = color;
   });
 }
 
@@ -68,14 +68,12 @@ export function updateColor(colorId: number, updatedColor: Color) {
   return true;
 }
 
-export function getColorsByIdOrName(colorToFind: number | string) {
-  const isColorToFindId = typeof colorToFind === 'number';
+export function getColorsById(colorId: number) {
+  return colorsIndex[colorId];
+}
 
-  if (isColorToFindId) {
-    return colorsIndex[colorToFind];
-  } else if (colorsNameIndex[colorToFind]) {
-    return colorsNameIndex[colorToFind];
-  }
+export function getColorsByName(colorName: string) {
+  return colorsNameIndex[colorName.toLowerCase()];
 }
 
 loadColorsJSON();
