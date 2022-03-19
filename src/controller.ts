@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { getColors, getColorsById, getColorsByName } from './colors';
-import { ColorsParams } from './types';
+import { addColor, getColors, getColorsById, getColorsByName } from './colors';
+import { ColorRequest } from './types';
 
-export function sendAllColors(_: Request, res: Response) {
+export function handleGetAllColors(_: ColorRequest, res: Response) {
   res.status(200).json({ message: 'ok', data: getColors() });
 }
 
-export function sendColorById(req: Request<ColorsParams>, res: Response) {
+export function handleGetColorById(req: ColorRequest, res: Response) {
   const id = Number(req.params.id);
 
   if (id === NaN) {
@@ -24,7 +24,7 @@ export function sendColorById(req: Request<ColorsParams>, res: Response) {
   res.status(200).json({ message: 'ok', data: color });
 }
 
-export function sendColorByName(req: Request<ColorsParams>, res: Response) {
+export function handleGetColorByName(req: ColorRequest, res: Response) {
   const { name } = req.params;
 
   const color = getColorsByName(name);
@@ -35,4 +35,14 @@ export function sendColorByName(req: Request<ColorsParams>, res: Response) {
   }
 
   res.status(200).json({ message: 'ok', data: color });
+}
+
+export function handleAddNewColor(req: ColorRequest, res: Response) {
+  const newColor = req.body;
+
+  const newColorWithId = addColor(newColor);
+
+  res
+    .status(201)
+    .json({ message: 'Successfully added new color', data: newColorWithId });
 }

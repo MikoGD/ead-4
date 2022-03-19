@@ -27,6 +27,7 @@ interface ColorNameIndex {
 
 const colorsIndex: ColorsIndex = {};
 const colorsNameIndex: ColorNameIndex = {};
+let currId = 0;
 
 function loadColorsJSON() {
   const colorsPath = path.resolve(
@@ -35,10 +36,14 @@ function loadColorsJSON() {
   );
 
   const colorsFile = fs.readFileSync(colorsPath);
-
   const colors: Color[] = JSON.parse(String(colorsFile));
+
   colors.forEach((color) => {
     const { colorId, name } = color;
+
+    if (colorId > currId) {
+      currId = colorId;
+    }
 
     colorsIndex[colorId] = color;
     colorsNameIndex[name.toLowerCase()] = color;
@@ -49,8 +54,16 @@ export function getColors() {
   return colorsIndex;
 }
 
-export function addColor(newColor: Color) {
-  colorsIndex[newColor.colorId] = newColor;
+export function addColor(newColor: Omit<Color, 'colorId'>) {
+  currId += 1;
+
+  const newId = currId;
+  const newColorWithId: Color = { colorId: currId, ...newColor };
+
+  colorsIndex[newId] = newColorWithId;
+  colorsNameIndex[newColor.name.toLowerCase()] = newColorWithId;
+
+  return newColorWithId;
 }
 
 /**

@@ -1,5 +1,10 @@
 import express from 'express';
-import { sendAllColors, sendColorById, sendColorByName } from './controller';
+import {
+  handleAddNewColor,
+  handleGetAllColors,
+  handleGetColorById,
+  handleGetColorByName,
+} from './controller';
 
 /* TODO:
 - Make routes async
@@ -7,8 +12,9 @@ import { sendAllColors, sendColorById, sendColorByName } from './controller';
 */
 const router = express.Router();
 
-router.get('/', sendAllColors);
-router.get('/id/:id', sendColorById);
-router.get('/name/:name', sendColorByName);
+router.get('/', handleGetAllColors);
+router.get('/id/:id', handleGetColorById);
+router.get('/name/:name', handleGetColorByName);
+router.post('/', handleAddNewColor);
 
 export default router;
