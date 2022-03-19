@@ -1,9 +1,7 @@
 {
     "env": {
         "es2021": true,
-        "node": true,
-        "browser": true,
-        "jquery": true
+        "node": true
     },
     "extends": [
         "airbnb-base",
@@ -26,7 +24,7 @@
     "settings": {
         "import/resolver": {
             "node": {
-                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+                "extensions": [".ts"]
             }
         }
     }
