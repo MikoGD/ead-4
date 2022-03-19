@@ -1,5 +1,12 @@
 import { Request, Response } from 'express';
-import { addColor, getColors, getColorsById, getColorsByName } from './colors';
+import {
+  addColor,
+  getColors,
+  getColorsById,
+  getColorsByName,
+  updateColorById,
+  updateColorByName,
+} from './colors';
 import { ColorRequest } from './types';
 
 export function handleGetAllColors(_: ColorRequest, res: Response) {
@@ -45,4 +52,38 @@ export function handleAddNewColor(req: ColorRequest, res: Response) {
   res
     .status(201)
     .json({ message: 'Successfully added new color', data: newColorWithId });
+}
+
+export function handleUpdateColorById(req: ColorRequest, res: Response) {
+  const id = Number(req.params.id);
+  const updatedColor = req.body;
+
+  if (id === NaN) {
+    res.status(404).json({ error: 'invalid color id to update' });
+  }
+
+  const didUpdate = updateColorById(id, updatedColor);
+
+  if (!didUpdate) {
+    res
+      .status(404)
+      .json({ error: `could not find color to update from id of ${id}` });
+  }
+
+  res.status(204).json({});
+}
+
+export function handleUpdateColorByName(req: ColorRequest, res: Response) {
+  const name = req.params.name;
+  const updatedColor = req.body;
+
+  const didUpdate = updateColorByName(name, updatedColor);
+
+  if (!didUpdate) {
+    res
+      .status(404)
+      .json({ error: `could not find color to update from name of ${name}` });
+  }
+
+  res.status(204).json({});
 }

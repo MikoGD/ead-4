@@ -46,7 +46,7 @@ function loadColorsJSON() {
     }
 
     colorsIndex[colorId] = color;
-    colorsNameIndex[name.toLowerCase()] = color;
+    colorsNameIndex[name] = color;
   });
 }
 
@@ -54,6 +54,9 @@ export function getColors() {
   return colorsIndex;
 }
 
+/* TODO:
+- Update to handle colors.JSON file update 
+*/
 export function addColor(newColor: Omit<Color, 'colorId'>) {
   currId += 1;
 
@@ -61,7 +64,7 @@ export function addColor(newColor: Omit<Color, 'colorId'>) {
   const newColorWithId: Color = { colorId: currId, ...newColor };
 
   colorsIndex[newId] = newColorWithId;
-  colorsNameIndex[newColor.name.toLowerCase()] = newColorWithId;
+  colorsNameIndex[newColor.name] = newColorWithId;
 
   return newColorWithId;
 }
@@ -69,7 +72,7 @@ export function addColor(newColor: Omit<Color, 'colorId'>) {
 /**
  * Returns true if color was updated else false
  */
-export function updateColor(colorId: number, updatedColor: Color) {
+export function updateColorById(colorId: number, updatedColor: Color) {
   const colorToUpdate = colorsIndex[colorId];
 
   if (!colorToUpdate) {
@@ -77,6 +80,29 @@ export function updateColor(colorId: number, updatedColor: Color) {
   }
 
   colorsIndex[colorId] = { ...colorToUpdate, ...updatedColor };
+  colorsNameIndex[colorToUpdate.name] = {
+    ...colorToUpdate,
+    ...updatedColor,
+  };
+
+  return true;
+}
+
+/**
+ * Returns true if color was updated else false
+ */
+export function updateColorByName(colorName: string, updatedColor: Color) {
+  const colorToUpdate = colorsNameIndex[colorName];
+
+  if (!colorToUpdate) {
+    return false;
+  }
+
+  colorsIndex[colorToUpdate.colorId] = { ...colorToUpdate, ...updatedColor };
+  colorsNameIndex[colorName] = {
+    ...colorToUpdate,
+    ...updatedColor,
+  };
 
   return true;
 }
@@ -86,7 +112,24 @@ export function getColorsById(colorId: number) {
 }
 
 export function getColorsByName(colorName: string) {
-  return colorsNameIndex[colorName.toLowerCase()];
+  return colorsNameIndex[colorName];
+}
+
+function deleteColor(colorId: number, name: string) {
+  delete colorsIndex[colorId];
+  delete colorsNameIndex[name];
+}
+
+export function deleteColorById(colorId: number) {
+  const { name } = colorsIndex[colorId];
+
+  deleteColor(colorId, name);
+}
+
+export function deleteColorByName(name: string) {
+  const { colorId } = colorsNameIndex[name];
+
+  deleteColor(colorId, name);
 }
 
 loadColorsJSON();
