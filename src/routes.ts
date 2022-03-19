@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import {
   handleAddNewColor,
   handleGetAllColors,
@@ -7,6 +7,8 @@ import {
   handleUpdateColorById,
   handleUpdateColorByName,
 } from './controller';
+import { Response } from 'express';
+import { ColorRequest } from './types';
 
 /* TODO:
 - Make routes async
@@ -14,19 +16,23 @@ import {
 */
 const router = express.Router();
 
-router.use((req, _, next) => {
+function addColorNameIndexMiddleware(
+  req: ColorRequest,
+  _: Response,
+  next: NextFunction
+) {
   if (req.body && req.body.name) {
-    req.body.name = req.body.name.toLowerCase();
+    req.body.colorNameIndex = req.body.name.toLowerCase();
   }
 
   next();
-});
+}
 
 router.get('/', handleGetAllColors);
 router.get('/id/:id', handleGetColorById);
 router.get('/name/:name', handleGetColorByName);
 router.post('/', handleAddNewColor);
-router.put('/id/:id', handleUpdateColorById);
-router.put('/name/:name', handleUpdateColorByName);
+router.put('/id/:id', addColorNameIndexMiddleware, handleUpdateColorById);
+router.put('/name/:name', addColorNameIndexMiddleware, handleUpdateColorByName);
 
 export default router;

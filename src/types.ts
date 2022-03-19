@@ -6,6 +6,8 @@ interface ColorsParams {
   name: string;
 }
 
-interface ColorsBody extends Color {}
+export interface ColorsBody extends Color {
+  colorNameIndex: string;
+}
 
 export type ColorRequest = Request<ColorsParams, any, ColorsBody>;

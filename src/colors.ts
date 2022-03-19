@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { ColorsBody } from './types';
 
 export interface Color {
   colorId: number;
@@ -69,21 +70,34 @@ export function addColor(newColor: Omit<Color, 'colorId'>) {
   return newColorWithId;
 }
 
+function updateColor(colorId: number, name: string, updatedColor: Color) {
+  colorsIndex[colorId] = updatedColor;
+  colorsNameIndex[name] = updatedColor;
+}
+
 /**
  * Returns true if color was updated else false
  */
-export function updateColorById(colorId: number, updatedColor: Color) {
+export function updateColorById(colorId: number, updatedColorBody: ColorsBody) {
   const colorToUpdate = colorsIndex[colorId];
 
   if (!colorToUpdate) {
     return false;
   }
 
-  colorsIndex[colorId] = { ...colorToUpdate, ...updatedColor };
-  colorsNameIndex[colorToUpdate.name] = {
+  const colorNameIndex = updatedColorBody.colorNameIndex;
+  const updatedColor: Partial<ColorsBody> = {
     ...colorToUpdate,
-    ...updatedColor,
+    ...updatedColorBody,
   };
+
+  delete updatedColor.colorNameIndex;
+
+  updateColor(
+    (updatedColor as Color).colorId,
+    colorNameIndex,
+    updatedColor as Color
+  );
 
   return true;
 }
@@ -91,19 +105,29 @@ export function updateColorById(colorId: number, updatedColor: Color) {
 /**
  * Returns true if color was updated else false
  */
-export function updateColorByName(colorName: string, updatedColor: Color) {
+export function updateColorByName(
+  colorName: string,
+  updatedColorBody: ColorsBody
+) {
   const colorToUpdate = colorsNameIndex[colorName];
 
   if (!colorToUpdate) {
     return false;
   }
 
-  colorsIndex[colorToUpdate.colorId] = { ...colorToUpdate, ...updatedColor };
-  colorsNameIndex[colorName] = {
+  const colorNameIndex = updatedColorBody.colorNameIndex;
+  const updatedColor: Partial<ColorsBody> = {
     ...colorToUpdate,
-    ...updatedColor,
+    ...updatedColorBody,
   };
 
+  delete updatedColor.colorNameIndex;
+
+  updateColor(
+    (updatedColorBody as Color).colorId,
+    colorNameIndex,
+    updatedColorBody as Color
+  );
   return true;
 }
 
