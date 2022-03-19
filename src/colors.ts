@@ -17,7 +17,7 @@ export interface Color {
   name: string;
 }
 
-interface ColorIdIndex {
+interface ColorsIndex {
   [id: number]: Color;
 }
 
@@ -25,43 +25,45 @@ interface ColorNameIndex {
   [name: string]: Color;
 }
 
-let colors: Color[] = [];
-
-const colorIdIndex: ColorIdIndex = {};
-const colorNameIndex: ColorNameIndex = {};
+const colorsIndex: ColorsIndex = {};
+const colorsNameIndex: ColorNameIndex = {};
 
 function loadColorsJSON() {
   const colorsPath = path.resolve(
     __dirname,
     `../${process.env.COLORS_PATH}` ?? ''
   );
+
   const colorsFile = fs.readFileSync(colorsPath);
 
-  colors = JSON.parse(String(colorsFile));
+  const colors: Color[] = JSON.parse(String(colorsFile));
+  colors.forEach((color) => {
+    const { colorId, name } = color;
+
+    colorsIndex[colorId] = color;
+    colorsNameIndex[name] = color;
+  });
 }
 
 export function getColors() {
-  return colors;
+  return colorsIndex;
 }
 
 export function addColor(newColor: Color) {
-  colors = [...colors, newColor];
+  colorsIndex[newColor.colorId] = newColor;
 }
 
 /**
  * Returns true if color was updated else false
  */
 export function updateColor(colorId: number, updatedColor: Color) {
-  const colorToUpdateIndex = colors.findIndex(
-    ({ colorId }) => colorId === colorId
-  );
-  const colorToUpdate = colors[colorToUpdateIndex];
+  const colorToUpdate = colorsIndex[colorId];
 
   if (!colorToUpdate) {
     return false;
   }
 
-  colors[colorToUpdateIndex] = { ...colorToUpdate, ...updatedColor };
+  colorsIndex[colorId] = { ...colorToUpdate, ...updatedColor };
 
   return true;
 }
@@ -69,28 +71,11 @@ export function updateColor(colorId: number, updatedColor: Color) {
 export function getColorsByIdOrName(colorToFind: number | string) {
   const isColorToFindId = typeof colorToFind === 'number';
 
-  if (isColorToFindId && colorIdIndex[colorToFind]) {
-    return colorIdIndex[colorToFind];
-  } else if (colorNameIndex[colorToFind]) {
-    return colorNameIndex[colorToFind];
+  if (isColorToFindId) {
+    return colorsIndex[colorToFind];
+  } else if (colorsNameIndex[colorToFind]) {
+    return colorsNameIndex[colorToFind];
   }
-
-  const color = colors.find(
-    ({ colorId, name }) =>
-      (isColorToFindId && colorId === colorToFind) || name.toLowerCase() === colorToFind
-  );
-
-  if (color) {
-    if (isColorToFindId) {
-      colorIdIndex[colorToFind] = color;
-      return color;
-    } else {
-      colorNameIndex[colorToFind] = color;
-      return color;
-    }
-  }
-
-  return color;
 }
 
 loadColorsJSON();
