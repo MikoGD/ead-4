@@ -10,12 +10,9 @@ import {
   handleUpdateColorByName,
 } from './controller';
 import { Response } from 'express';
-import { ColorRequest } from './types';
+import { ColorRequest, ColorsBody, ColorsParams } from './types';
+import { asyncRoute } from './utils';
 
-/* TODO:
-- Make routes async
-- Implement wrapper to catch errors
-*/
 const router = express.Router();
 
 function addColorNameIndexMiddleware(
@@ -30,19 +27,38 @@ function addColorNameIndexMiddleware(
   next();
 }
 
-/*REVIEW:
- - Test if delete routes work
- */
-router.get('/', handleGetAllColors);
-router.get('/id/:id', handleGetColorById).post;
-router.get('/name/:name', handleGetColorByName);
+router.get<ColorsParams, any, ColorsBody>('/', async (req, res) =>
+  asyncRoute(req, res, handleGetAllColors)
+);
 
-router.post('/', handleAddNewColor);
+router.get<ColorsParams, any, ColorsBody>('/id/:id', async (req, res) =>
+  asyncRoute(req, res, handleGetColorById)
+);
 
-router.put('/id/:id', addColorNameIndexMiddleware, handleUpdateColorById);
-router.put('/name/:name', addColorNameIndexMiddleware, handleUpdateColorByName);
+router.get<ColorsParams, any, ColorsBody>('/name/:name', async (req, res) =>
+  asyncRoute(req, res, handleGetColorByName)
+);
 
-router.delete('/id/:id', handleDeleteColorById);
-router.delete('/name/:name', handleDeleteColorByName);
+router.post<ColorsParams, any, ColorsBody>('/', async (req, res) =>
+  asyncRoute(req, res, handleAddNewColor)
+);
+
+router.put<ColorsParams, any, ColorsBody>(
+  '/id/:id',
+  addColorNameIndexMiddleware,
+  async (req, res) => asyncRoute(req, res, handleUpdateColorById)
+);
+router.put<ColorsParams, any, ColorsBody>(
+  '/name/:name',
+  addColorNameIndexMiddleware,
+  async (req, res) => asyncRoute(req, res, handleUpdateColorByName)
+);
+
+router.delete<ColorsParams, any, ColorsBody>('/id/:id', async (req, res) =>
+  asyncRoute(req, res, handleDeleteColorById)
+);
+router.delete<ColorsParams, any, ColorsBody>('/name/:name', async (req, res) =>
+  asyncRoute(req, res, handleDeleteColorByName)
+);
 
 export default router;

@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { Color } from './colors';
 
-interface ColorsParams {
+export interface ColorsParams {
   id: string;
   name: string;
 }

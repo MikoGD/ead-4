@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { ColorsBody } from './types';
+import { Mutex } from 'async-mutex';
 
 export interface Color {
   colorId: number;
@@ -18,7 +19,7 @@ export interface Color {
   name: string;
 }
 
-interface ColorsIndex {
+export interface ColorsIndex {
   [id: number]: Color;
 }
 
@@ -28,6 +29,7 @@ interface ColorNameIndex {
 
 const colorsIndex: ColorsIndex = {};
 const colorsNameIndex: ColorNameIndex = {};
+export const colorsMutex = new Mutex();
 let currId = 0;
 
 function loadColorsJSON() {

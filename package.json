@@ -26,6 +26,7 @@
     "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/index.ts\""
   },
   "dependencies": {
+    "async-mutex": "^0.3.2",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "morgan": "^1.10.0",

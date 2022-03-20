@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { create } from 'domain';
+import { Response } from 'express';
 import {
   addColor,
   deleteColorById,
@@ -8,118 +9,137 @@ import {
   getColorsByName,
   updateColorById,
   updateColorByName,
+  colorsMutex,
+  ColorsIndex,
+  Color,
 } from './colors';
 import { ColorRequest } from './types';
 
-export function handleGetAllColors(_: ColorRequest, res: Response) {
-  res.status(200).json({ message: 'ok', data: getColors() });
+export function createError(status: number, message?: string) {
+  return JSON.stringify({ status, message });
 }
 
-export function handleGetColorById(req: ColorRequest, res: Response) {
+export async function handleGetAllColors(_: ColorRequest, res: Response) {
+  const colors = await colorsMutex.runExclusive<ColorsIndex>(() => getColors());
+
+  res.status(200).json({ message: 'ok', data: colors });
+}
+
+export async function handleGetColorById(req: ColorRequest, res: Response) {
   const id = Number(req.params.id);
 
   if (id === NaN) {
-    res.status(404).json({ error: `invalid color id: ${id}` });
-    return;
+    throw new Error(createError(404, `invalid color id: ${id}`));
   }
 
-  const color = getColorsById(id);
+  const color = await colorsMutex.runExclusive<Color>(() => getColorsById(id));
 
   if (!color) {
-    res.status(404).json({ error: `could not find color: ${id}` });
-    return;
+    throw new Error(createError(404, `could not find color: ${id}`));
   }
 
   res.status(200).json({ message: 'ok', data: color });
 }
 
-export function handleGetColorByName(req: ColorRequest, res: Response) {
+export async function handleGetColorByName(req: ColorRequest, res: Response) {
   const { name } = req.params;
 
-  const color = getColorsByName(name);
+  const color = await colorsMutex.runExclusive<Color>(() =>
+    getColorsByName(name)
+  );
 
   if (!color) {
-    res.status(404).json({ error: `could not find color: ${name}` });
-    return;
+    throw new Error(createError(404, `could not find color: ${name}`));
   }
 
   res.status(200).json({ message: 'ok', data: color });
 }
 
-export function handleAddNewColor(req: ColorRequest, res: Response) {
+export async function handleAddNewColor(req: ColorRequest, res: Response) {
   const newColor = req.body;
 
-  const newColorWithId = addColor(newColor);
+  const newColorWithId = await colorsMutex.runExclusive<Color>(() =>
+    addColor(newColor)
+  );
 
   res
     .status(201)
     .json({ message: 'Successfully added new color', data: newColorWithId });
 }
 
-export function handleUpdateColorById(req: ColorRequest, res: Response) {
+export async function handleUpdateColorById(req: ColorRequest, res: Response) {
   const id = Number(req.params.id);
   const updatedColor = req.body;
 
   if (id === NaN) {
-    res.status(404).json({ error: 'invalid color id to update' });
+    throw new Error(createError(404, `invalid color id of ${id} to update`));
   }
 
-  const didUpdate = updateColorById(id, updatedColor);
+  const didUpdate = await colorsMutex.runExclusive(() =>
+    updateColorById(id, updatedColor)
+  );
 
   if (!didUpdate) {
-    res
-      .status(404)
-      .json({ error: `could not find color to update from id of ${id}` });
+    throw new Error(
+      createError(404, `could not find color to update from id of ${id}`)
+    );
   }
 
   res.status(204).json({});
 }
 
-export function handleUpdateColorByName(req: ColorRequest, res: Response) {
+export async function handleUpdateColorByName(
+  req: ColorRequest,
+  res: Response
+) {
   const name = req.params.name;
   const updatedColor = req.body;
 
-  const didUpdate = updateColorByName(name, updatedColor);
+  const didUpdate = await colorsMutex.runExclusive(() =>
+    updateColorByName(name, updatedColor)
+  );
 
   if (!didUpdate) {
-    res
-      .status(404)
-      .json({ error: `could not find color to update from name of ${name}` });
+    throw new Error(
+      createError(404, `could not find color to update from name of ${name}`)
+    );
   }
 
   res.status(204).json({});
 }
 
-export function handleDeleteColorById(req: ColorRequest, res: Response) {
+export async function handleDeleteColorById(req: ColorRequest, res: Response) {
   const id = Number(req.params.id);
 
   if (id === NaN) {
-    res.status(404).json({ error: 'invalid color id to delete' });
+    throw new Error(createError(404, 'invalid color id to delete'));
   }
 
-  const isDeleted = deleteColorById(id);
+  const isDeleted = await colorsMutex.runExclusive(() => deleteColorById(id));
 
   if (!isDeleted) {
-    res
-      .status(404)
-      .json({ error: `could not find color of id ${id} to delete` });
-    return;
+    throw new Error(
+      createError(404, `could not find color of id ${id} to delete`)
+    );
   }
 
   res.status(204).json({});
 }
 
-export function handleDeleteColorByName(req: ColorRequest, res: Response) {
+export async function handleDeleteColorByName(
+  req: ColorRequest,
+  res: Response
+) {
   const name = req.params.name;
 
-  const isDeleted = deleteColorByName(name.toLowerCase());
+  const isDeleted = colorsMutex.runExclusive(() =>
+    deleteColorByName(name.toLowerCase())
+  );
 
   if (!isDeleted) {
-    res
-      .status(404)
-      .json({ error: `could not find color of name ${name} to delete` });
-
-    return;
+    throw new Error(
+      createError(404, `could not find color of name ${name} to delete`)
+    );
   }
 
   res.status(204).json({});
