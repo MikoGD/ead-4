@@ -47,7 +47,7 @@ function loadColorsJSON() {
     }
 
     colorsIndex[colorId] = color;
-    colorsNameIndex[name] = color;
+    colorsNameIndex[name.toLowerCase()] = color;
   });
 }
 
@@ -65,7 +65,7 @@ export function addColor(newColor: Omit<Color, 'colorId'>) {
   const newColorWithId: Color = { colorId: currId, ...newColor };
 
   colorsIndex[newId] = newColorWithId;
-  colorsNameIndex[newColor.name] = newColorWithId;
+  colorsNameIndex[newColor.name.toLowerCase()] = newColorWithId;
 
   return newColorWithId;
 }
@@ -85,7 +85,8 @@ export function updateColorById(colorId: number, updatedColorBody: ColorsBody) {
     return false;
   }
 
-  const colorNameIndex = updatedColorBody.colorNameIndex;
+  // No chance of undefine due to middleware
+  const colorNameIndex = updatedColorBody.colorNameIndex!;
   const updatedColor: Partial<ColorsBody> = {
     ...colorToUpdate,
     ...updatedColorBody,
@@ -115,7 +116,8 @@ export function updateColorByName(
     return false;
   }
 
-  const colorNameIndex = updatedColorBody.colorNameIndex;
+  // No chance of undefine due to middleware
+  const colorNameIndex = updatedColorBody.colorNameIndex!;
   const updatedColor: Partial<ColorsBody> = {
     ...colorToUpdate,
     ...updatedColorBody,
@@ -144,16 +146,42 @@ function deleteColor(colorId: number, name: string) {
   delete colorsNameIndex[name];
 }
 
+/**
+ * If color found and deleted return true else false
+ *
+ * @param colorId
+ * @returns boolean
+ */
 export function deleteColorById(colorId: number) {
   const { name } = colorsIndex[colorId];
 
-  deleteColor(colorId, name);
+  if (!name) {
+    return false;
+  }
+
+  deleteColor(colorId, name.toLowerCase());
+
+  return true;
 }
 
+/**
+ * If color found and deleted return true else false
+ *
+ * @param name
+ * @returns boolean
+ */
 export function deleteColorByName(name: string) {
+  const color = colorsNameIndex[name];
+
+  if (!color) {
+    return false;
+  }
+
   const { colorId } = colorsNameIndex[name];
 
   deleteColor(colorId, name);
+
+  return true;
 }
 
 loadColorsJSON();

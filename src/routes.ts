@@ -1,6 +1,8 @@
 import express, { NextFunction } from 'express';
 import {
   handleAddNewColor,
+  handleDeleteColorById,
+  handleDeleteColorByName,
   handleGetAllColors,
   handleGetColorById,
   handleGetColorByName,
@@ -28,11 +30,19 @@ function addColorNameIndexMiddleware(
   next();
 }
 
+/*REVIEW:
+ - Test if delete routes work
+ */
 router.get('/', handleGetAllColors);
-router.get('/id/:id', handleGetColorById);
+router.get('/id/:id', handleGetColorById).post;
 router.get('/name/:name', handleGetColorByName);
+
 router.post('/', handleAddNewColor);
+
 router.put('/id/:id', addColorNameIndexMiddleware, handleUpdateColorById);
 router.put('/name/:name', addColorNameIndexMiddleware, handleUpdateColorByName);
+
+router.delete('/id/:id', handleDeleteColorById);
+router.delete('/name/:name', handleDeleteColorByName);
 
 export default router;

@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import {
   addColor,
+  deleteColorById,
+  deleteColorByName,
   getColors,
   getColorsById,
   getColorsByName,
@@ -83,6 +85,41 @@ export function handleUpdateColorByName(req: ColorRequest, res: Response) {
     res
       .status(404)
       .json({ error: `could not find color to update from name of ${name}` });
+  }
+
+  res.status(204).json({});
+}
+
+export function handleDeleteColorById(req: ColorRequest, res: Response) {
+  const id = Number(req.params.id);
+
+  if (id === NaN) {
+    res.status(404).json({ error: 'invalid color id to delete' });
+  }
+
+  const isDeleted = deleteColorById(id);
+
+  if (!isDeleted) {
+    res
+      .status(404)
+      .json({ error: `could not find color of id ${id} to delete` });
+    return;
+  }
+
+  res.status(204).json({});
+}
+
+export function handleDeleteColorByName(req: ColorRequest, res: Response) {
+  const name = req.params.name;
+
+  const isDeleted = deleteColorByName(name.toLowerCase());
+
+  if (!isDeleted) {
+    res
+      .status(404)
+      .json({ error: `could not find color of name ${name} to delete` });
+
+    return;
   }
 
   res.status(204).json({});
