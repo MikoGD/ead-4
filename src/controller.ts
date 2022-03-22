@@ -1,5 +1,5 @@
 import { create } from 'domain';
-import { Response } from 'express';
+import { NextFunction, Response } from 'express';
 import {
   addColor,
   deleteColorById,
@@ -25,23 +25,23 @@ export async function handleGetAllColors(_: ColorRequest, res: Response) {
   res.status(200).json({ message: 'ok', data: colors });
 }
 
-export async function handleGetColorById(req: ColorRequest, res: Response) {
+export async function handleGetColorById(req: ColorRequest, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
 
   if (id === NaN) {
-    throw new Error(createError(404, `invalid color id: ${id}`));
+    next(createError(404, `invalid color id: ${id}`));
   }
 
   const color = await colorsMutex.runExclusive<Color>(() => getColorsById(id));
 
   if (!color) {
-    throw new Error(createError(404, `could not find color: ${id}`));
+    next(createError(404, `could not find color: ${id}`));
   }
 
   res.status(200).json({ message: 'ok', data: color });
 }
 
-export async function handleGetColorByName(req: ColorRequest, res: Response) {
+export async function handleGetColorByName(req: ColorRequest, res: Response, next: NextFunction) {
   const { name } = req.params;
 
   const color = await colorsMutex.runExclusive<Color>(() =>
@@ -49,7 +49,7 @@ export async function handleGetColorByName(req: ColorRequest, res: Response) {
   );
 
   if (!color) {
-    throw new Error(createError(404, `could not find color: ${name}`));
+    next(createError(404, `could not find color: ${name}`));
   }
 
   res.status(200).json({ message: 'ok', data: color });
@@ -67,12 +67,12 @@ export async function handleAddNewColor(req: ColorRequest, res: Response) {
     .json({ message: 'Successfully added new color', data: newColorWithId });
 }
 
-export async function handleUpdateColorById(req: ColorRequest, res: Response) {
+export async function handleUpdateColorById(req: ColorRequest, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
   const updatedColor = req.body;
 
   if (id === NaN) {
-    throw new Error(createError(404, `invalid color id of ${id} to update`));
+    next(createError(404, `invalid color id of ${id} to update`));
   }
 
   const didUpdate = await colorsMutex.runExclusive(() =>
@@ -80,7 +80,7 @@ export async function handleUpdateColorById(req: ColorRequest, res: Response) {
   );
 
   if (!didUpdate) {
-    throw new Error(
+    next(
       createError(404, `could not find color to update from id of ${id}`)
     );
   }
@@ -90,7 +90,8 @@ export async function handleUpdateColorById(req: ColorRequest, res: Response) {
 
 export async function handleUpdateColorByName(
   req: ColorRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   const name = req.params.name;
   const updatedColor = req.body;
@@ -100,7 +101,7 @@ export async function handleUpdateColorByName(
   );
 
   if (!didUpdate) {
-    throw new Error(
+    next(
       createError(404, `could not find color to update from name of ${name}`)
     );
   }
@@ -108,17 +109,17 @@ export async function handleUpdateColorByName(
   res.status(204).json({});
 }
 
-export async function handleDeleteColorById(req: ColorRequest, res: Response) {
+export async function handleDeleteColorById(req: ColorRequest, res: Response, next: NextFunction) {
   const id = Number(req.params.id);
 
   if (id === NaN) {
-    throw new Error(createError(404, 'invalid color id to delete'));
+    next(createError(404, 'invalid color id to delete'));
   }
 
   const isDeleted = await colorsMutex.runExclusive(() => deleteColorById(id));
 
   if (!isDeleted) {
-    throw new Error(
+    next(
       createError(404, `could not find color of id ${id} to delete`)
     );
   }
@@ -128,7 +129,8 @@ export async function handleDeleteColorById(req: ColorRequest, res: Response) {
 
 export async function handleDeleteColorByName(
   req: ColorRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   const name = req.params.name;
 
@@ -137,7 +139,7 @@ export async function handleDeleteColorByName(
   );
 
   if (!isDeleted) {
-    throw new Error(
+    next(
       createError(404, `could not find color of name ${name} to delete`)
     );
   }
