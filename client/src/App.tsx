@@ -7,9 +7,6 @@ import { Color } from './types';
 import './app.module.scss';
 import { Header } from './components/header';
 import { DisplayPage, AddPage } from './components/pages';
-import ColorButtons from './components/color/color-buttons.component';
-import ColorDisplay from './components/color/color-display.component';
-import ColorInputs from './components/color/color-inputs.component';
 import { GetColorResponse, getColorById } from './api/axios';
 
 const colorDefault: Color = {
