@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import convert from 'color-convert';
 import { HSL, RGB } from 'color-convert/conversions';
 import styles from './pages.module.scss';
+import { addColor } from '../../api/axios';
+import { Color } from '../../types';
 
 interface Inputs {
   name: string;
@@ -17,6 +19,7 @@ interface Inputs {
 
 export function AddPage(): React.ReactElement {
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
+  const [postSuccess, setPostSuccess] = useState<boolean | null>(null);
 
   function onHexChange(event: React.ChangeEvent<HTMLInputElement>) {
     const [r, g, b] = convert.hex.rgb(event.target.value);
@@ -64,8 +67,32 @@ export function AddPage(): React.ReactElement {
     setValue('b', b);
   }
 
-  function onSubmit(data: Inputs) {
-    console.log(data);
+  async function onSubmit(inputs: Inputs) {
+    const newColor: Omit<Color, 'colorId'> = {
+      name: inputs.name,
+      hexString: inputs.hexString,
+      rgb: {
+        r: inputs.r,
+        g: inputs.g,
+        b: inputs.b,
+      },
+      hsl: {
+        h: inputs.h,
+        s: inputs.s,
+        l: inputs.l,
+      },
+    };
+
+    try {
+      await addColor(newColor);
+      setPostSuccess(true);
+    } catch (e) {
+      setPostSuccess(false);
+    }
+
+    setTimeout(() => {
+      setPostSuccess(null);
+    }, 5000);
   }
 
   return (
@@ -155,7 +182,7 @@ export function AddPage(): React.ReactElement {
                     required: true,
                     valueAsNumber: true,
                     min: 0,
-                    max: 240,
+                    max: letter === 'h' ? 359 : 100,
                     value: 0,
                     onChange: onHSLChange,
                   })}
@@ -164,6 +191,15 @@ export function AddPage(): React.ReactElement {
             ))}
           </div>
         </div>
+        {postSuccess !== null && (
+          <div
+            className={`alert ${
+              postSuccess ? 'alert-success' : 'alert-danger'
+            }`}
+          >
+            {postSuccess ? 'Color added' : 'Error adding color'}
+          </div>
+        )}
         <button type="submit" className="btn btn-primary mt-5">
           Add Color
         </button>

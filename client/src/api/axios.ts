@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Color } from '../types';
+import { ColorResponse } from './hooks';
 
 export interface GetColorResponse {
   message: string;
@@ -30,6 +31,5 @@ export async function getColorById(index: number) {
 
 export async function addColor(newColor: Omit<Color, 'colorId'>) {
   const response = await colorAxios.post<PostColorResponse>('/', newColor);
-
   return response.data;
 }

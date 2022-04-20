@@ -20,6 +20,7 @@ export interface ColorResponse {
   error?: string;
 }
 
+// FIXME: Change to only GET requests
 export function useRequest<T extends Record<string, unknown>>(
   path: string,
   method: REQUEST_METHOD,
