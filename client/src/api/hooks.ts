@@ -20,7 +20,6 @@ export interface ColorResponse {
   error?: string;
 }
 
-// FIXME: Change to only GET requests
 export function useGetRequest(
   path: string
 ): [ColorResponse | undefined, string | undefined] {

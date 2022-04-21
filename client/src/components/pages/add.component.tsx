@@ -19,7 +19,7 @@ interface Inputs {
 
 export function AddPage(): React.ReactElement {
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
-  const [postSuccess, setPostSuccess] = useState<boolean | null>(null);
+  const [newColorUrl, setNewColorUrl] = useState<string | null>(null);
 
   function onHexChange(event: React.ChangeEvent<HTMLInputElement>) {
     const [r, g, b] = convert.hex.rgb(event.target.value);
@@ -84,15 +84,18 @@ export function AddPage(): React.ReactElement {
     };
 
     try {
-      await addColor(newColor);
-      setPostSuccess(true);
+      const response = await addColor(newColor);
+      const {
+        data: { url },
+      } = response;
+      setNewColorUrl(url);
     } catch (e) {
-      setPostSuccess(false);
+      setNewColorUrl('error');
+    } finally {
+      setTimeout(() => {
+        setNewColorUrl(null);
+      }, 5000);
     }
-
-    setTimeout(() => {
-      setPostSuccess(null);
-    }, 5000);
   }
 
   return (
@@ -191,13 +194,15 @@ export function AddPage(): React.ReactElement {
             ))}
           </div>
         </div>
-        {postSuccess !== null && (
+        {newColorUrl !== null && (
           <div
             className={`alert ${
-              postSuccess ? 'alert-success' : 'alert-danger'
+              newColorUrl !== 'error' ? 'alert-success' : 'alert-danger'
             }`}
           >
-            {postSuccess ? 'Color added' : 'Error adding color'}
+            {newColorUrl !== 'error'
+              ? `Color added: ${newColorUrl}`
+              : 'Error adding color'}
           </div>
         )}
         <button type="submit" className="btn btn-primary mt-5">
