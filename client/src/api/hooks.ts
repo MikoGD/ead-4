@@ -21,10 +21,8 @@ export interface ColorResponse {
 }
 
 // FIXME: Change to only GET requests
-export function useRequest<T extends Record<string, unknown>>(
-  path: string,
-  method: REQUEST_METHOD,
-  config?: T
+export function useGetRequest(
+  path: string
 ): [ColorResponse | undefined, string | undefined] {
   const [response, setResponse] = useState<ColorResponse>();
   const [error, setError] = useState<string>();
@@ -51,13 +49,7 @@ export function useRequest<T extends Record<string, unknown>>(
 
   useEffect(() => {
     if (!response) {
-      switch (method) {
-        case REQUEST_METHOD.GET:
-          sendGetRequest();
-          break;
-        default:
-          console.error('invalid method');
-      }
+      sendGetRequest();
     }
   }, [response]);
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
-import { REQUEST_METHOD, useRequest } from '../../api/hooks';
+import { useGetRequest } from '../../api/hooks';
 import { Color } from '../../types';
 import styles from './pages.module.scss';
 
 export function Display(): React.ReactElement {
-  const [response, error] = useRequest('/', REQUEST_METHOD.GET);
+  const [response, error] = useGetRequest('/');
   const [colors, setColors] = useState<Color[]>();
 
   useEffect(() => {
