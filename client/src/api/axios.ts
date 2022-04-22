@@ -23,8 +23,8 @@ export async function getAllColors() {
   return response.data;
 }
 
-export async function getColorById(index: number) {
-  const response = await colorAxios.get<GetColorResponse>(`/id/${index}`);
+export async function getColorById(colorId: number) {
+  const response = await colorAxios.get<GetColorResponse>(`/id/${colorId}`);
   return response.data;
 }
 
@@ -35,4 +35,8 @@ export async function addColor(newColor: Omit<Color, 'colorId'>) {
 
 export async function updateColor(updatedColor: Color) {
   await colorAxios.put(`/id/${updatedColor.colorId}`, updatedColor);
+}
+
+export async function removeColor(colorId: number) {
+  await colorAxios.delete(`/id/${colorId}`);
 }
