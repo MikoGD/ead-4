@@ -102,7 +102,7 @@ export async function handleUpdateColorById(
     return;
   }
 
-  res.status(204).json({});
+  res.status(204).send();
 }
 
 export async function handleUpdateColorByName(
