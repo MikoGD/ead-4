@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import convert from 'color-convert';
 import { HSL, RGB } from 'color-convert/conversions';
 import styles from './pages.module.scss';
-import { addColor, getColorById } from '../../api/axios';
+import { addColor, getColorById, updateColor } from '../../api/axios';
 import { Color } from '../../types';
 import { ColorResponse } from '../../api/hooks';
 
@@ -30,8 +30,8 @@ interface Inputs {
 
 export function UpdatePage(): React.ReactElement {
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
-  const [newColorUrl, setNewColorUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>();
+  const [didColorUpdate, setDidColorUpdate] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isColorSelected, setIsColorSelected] = useState(false);
   const timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -100,14 +100,6 @@ export function UpdatePage(): React.ReactElement {
     setValue('l', l, { shouldDirty: true });
   }
 
-  // function handleError(err: AxiosError<ColorResponse>) {
-  //   const message = err.response?.data.error;
-
-  //   setError(
-  //     `Error: get request for ${path} failed${message ? ` - ${message}` : ''}`
-  //   );
-  // }
-
   async function onColorIdChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (timeout.current) {
       clearTimeout(timeout.current);
@@ -120,9 +112,11 @@ export function UpdatePage(): React.ReactElement {
           if (!Array.isArray(response.data)) {
             setInputValues(response.data);
             setIsColorSelected(true);
+            setError(null);
           }
         } catch (e) {
-          console.error('failed to get colorID');
+          const { message } = e as AxiosError<ColorResponse>;
+          setError(`Invalid color ID - ${message}`);
           setIsColorSelected(true);
         }
       }
@@ -130,8 +124,9 @@ export function UpdatePage(): React.ReactElement {
   }
 
   async function onSubmit(inputs: Inputs) {
-    const newColor: Omit<Color, 'colorId'> = {
+    const newColor: Color = {
       name: inputs.name,
+      colorId: inputs.colorId,
       hexString: inputs.hexString,
       rgb: {
         r: inputs.r,
@@ -146,16 +141,13 @@ export function UpdatePage(): React.ReactElement {
     };
 
     try {
-      const response = await addColor(newColor);
-      const {
-        data: { url },
-      } = response;
-      setNewColorUrl(url);
+      await updateColor(newColor);
+      setDidColorUpdate(true);
     } catch (e) {
-      setNewColorUrl('error');
+      setDidColorUpdate(false);
     } finally {
       setTimeout(() => {
-        setNewColorUrl(null);
+        setDidColorUpdate(null);
       }, 5000);
     }
   }
@@ -166,6 +158,7 @@ export function UpdatePage(): React.ReactElement {
         if (!Array.isArray(response.data)) {
           setInputValues(response.data);
           setIsColorSelected(true);
+          setError(null);
         }
       })
       .catch((e: AxiosError<ColorResponse>) => {
@@ -288,19 +281,18 @@ export function UpdatePage(): React.ReactElement {
             ))}
           </div>
         </div>
-        {newColorUrl !== null && (
+        {error && <div className="alert alert-danger">{error}</div>}
+        {didColorUpdate !== null && (
           <div
             className={`alert ${
-              newColorUrl !== 'error' ? 'alert-success' : 'alert-danger'
+              didColorUpdate ? 'alert-success' : 'alert-danger'
             }`}
           >
-            {newColorUrl !== 'error'
-              ? `Color added: ${newColorUrl}`
-              : 'Error adding color'}
+            {didColorUpdate ? `Color Updated!` : 'Error updating color'}
           </div>
         )}
         <button type="submit" className="btn btn-primary mt-5">
-          Add Color
+          Update Color
         </button>
       </form>
     </div>
