@@ -20,6 +20,7 @@ export interface ColorResponse {
   error?: string;
 }
 
+// DELETE: Not having the intended effect, remove and switch to normal calls
 export function useGetRequest(
   path: string
 ): [ColorResponse | undefined, string | undefined] {

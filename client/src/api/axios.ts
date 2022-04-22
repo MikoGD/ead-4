@@ -26,7 +26,7 @@ export async function getAllColors() {
 
 export async function getColorById(index: number) {
   const response = await colorAxios.get<GetColorResponse>(`/id/${index}`);
-  return response.data.data;
+  return response.data;
 }
 
 export async function addColor(newColor: Omit<Color, 'colorId'>) {

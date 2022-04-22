@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './app.module.scss';
 import { Header } from './components/header';
-import { DisplayPage, AddPage } from './components/pages';
+import { DisplayPage, AddPage, UpdatePage } from './components/pages';
 
 /* TODO:
   - Add page to update colors
@@ -15,6 +15,7 @@ function App(): React.ReactElement {
       <Routes>
         <Route path="/display" element={<DisplayPage />} />
         <Route path="/add" element={<AddPage />} />
+        <Route path="/update" element={<UpdatePage />} />
       </Routes>
     </BrowserRouter>
   );
