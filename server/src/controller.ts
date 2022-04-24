@@ -11,6 +11,7 @@ import {
   colorsMutex,
   ColorsIndex,
   Color,
+  getColorByIndex,
 } from './colors';
 import { ColorRequest } from './types';
 
@@ -78,6 +79,28 @@ export async function handleAddNewColor(req: ColorRequest, res: Response) {
     message: 'Successfully added new color',
     data: { color: newColorWithId, url: `/id/${newColorWithId.colorId}` },
   });
+}
+
+export async function handleGetColorByIndex(
+  req: ColorRequest,
+  res: Response,
+  next: NextFunction
+) {
+  const index = Number(req.params.index);
+
+  if (index === NaN) {
+    next(createError(404, `invalid colors index of ${index} to update`));
+    return;
+  }
+
+  const color = await colorsMutex.runExclusive(() => getColorByIndex(index));
+
+  if (!color) {
+    next(createError(404, `could not find a color at index ${index}`));
+    return;
+  }
+
+  res.status(201).json({ message: 'success', data: color });
 }
 
 export async function handleUpdateColorById(

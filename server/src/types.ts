@@ -4,6 +4,7 @@ import { Color } from './colors';
 export interface ColorsParams {
   id: string;
   name: string;
+  index: string;
 }
 
 export interface ColorsBody extends Color {

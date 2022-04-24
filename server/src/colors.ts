@@ -186,4 +186,10 @@ export function deleteColorByName(name: string) {
   return true;
 }
 
+export function getColorByIndex(index: number) {
+  const colors = Object.values(colorsIndex) as Color[];
+
+  return colors[index];
+}
+
 loadColorsJSON();
