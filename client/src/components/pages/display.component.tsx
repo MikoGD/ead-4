@@ -18,7 +18,7 @@ export function Display(): React.ReactElement {
   }, [response]);
 
   return colors || error ? (
-    <div className="d-flex justify-content-between flex-wrap container">
+    <div className="d-flex justify-content-between flex-wrap container bg-white">
       {error && (
         <div className="w-100 text-center">
           <h2 className="text-danger">{error}</h2>

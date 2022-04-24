@@ -167,7 +167,7 @@ export function UpdatePage(): React.ReactElement {
   }, []);
 
   return isColorSelected ? (
-    <div className="container mt-5 d-flex justify-content-between">
+    <div className="container mt-5 d-flex justify-content-between bg-white p-3">
       <div className="d-flex flex-column w-50">
         <h2>Color Preview</h2>
         <div>

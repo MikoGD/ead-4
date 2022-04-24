@@ -3,9 +3,10 @@ import PulseLoader from 'react-spinners/PulseLoader';
 import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import styles from './pages.module.scss';
-import { getColorById, removeColor } from '../../api/axios';
+import { getColorById } from '../../api/axios';
 import { Color } from '../../types';
 import { ColorResponse } from '../../api/hooks';
+import getCookies from '../../cookies';
 
 interface Inputs {
   name: string;
@@ -19,12 +20,13 @@ interface Inputs {
   l: number;
 }
 
-export function RemovePage(): React.ReactElement {
+export function BackroundColorPage(): React.ReactElement {
   const { register, handleSubmit, watch, setValue } = useForm<Inputs>();
-  const [didColorDelete, setDidColorDelete] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isColorSelected, setIsColorSelected] = useState(false);
+  const [colorIndex, setColorIndex] = useState(0);
   const timeout = useRef<NodeJS.Timeout | null>(null);
+  const cookieObj = useRef(getCookies());
 
   function setInputValues(color: Color) {
     const {
@@ -67,22 +69,33 @@ export function RemovePage(): React.ReactElement {
   }
 
   async function onSubmit(inputs: Inputs) {
-    const { colorId } = inputs;
+    cookieObj.current.backgroundColorIndex = inputs.colorId;
+    document.body.style.backgroundColor = inputs.hexString;
+  }
 
+  async function onIndexClick(amount: number) {
+    const newIndex = colorIndex + amount;
     try {
-      await removeColor(colorId);
-      setDidColorDelete(true);
+      const color = await getColorById(newIndex);
+      setColorIndex(newIndex);
+      cookieObj.current.colorIndex = newIndex;
+      if (!Array.isArray(color.data)) {
+        setInputValues(color.data);
+      }
     } catch (e) {
-      setDidColorDelete(false);
-    } finally {
-      setTimeout(() => {
-        setDidColorDelete(null);
-      }, 5000);
+      const currError = e as AxiosError<ColorResponse>;
+      if (currError.response && currError.response.data.error) {
+        setError(currError.response.data.error);
+      } else {
+        setError(currError.message);
+      }
     }
   }
 
   useEffect(() => {
-    getColorById(1)
+    setColorIndex(cookieObj.current.colorIndex);
+
+    getColorById(cookieObj.current.colorIndex)
       .then((response) => {
         if (!Array.isArray(response.data)) {
           setInputValues(response.data);
@@ -105,6 +118,43 @@ export function RemovePage(): React.ReactElement {
             style={{ backgroundColor: watch('hexString', 'value') }}
           >
             &nbsp;
+          </div>
+          <div className={`d-flex ${styles.colorNavigation}`}>
+            <div className="btn-group">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => onIndexClick(-5)}
+              >
+                <i className="bi bi-chevron-double-left">&nbsp;</i>
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => onIndexClick(-1)}
+              >
+                <i className="bi bi-chevron-left">&nbsp;</i>
+              </button>
+            </div>
+            <div className="w-25 d-flex justify-content-center align-items-center flex-grow-1">
+              <h3 className="m-0">{colorIndex}</h3>
+            </div>
+            <div className="btn-group">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => onIndexClick(1)}
+              >
+                <i className="bi bi-chevron-right">&nbsp;</i>
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => onIndexClick(5)}
+              >
+                <i className="bi bi-chevron-double-right">&nbsp;</i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -211,17 +261,8 @@ export function RemovePage(): React.ReactElement {
           </div>
         </div>
         {error && <div className="alert alert-danger">{error}</div>}
-        {didColorDelete !== null && (
-          <div
-            className={`alert ${
-              didColorDelete ? 'alert-success' : 'alert-danger'
-            }`}
-          >
-            {didColorDelete ? `Color Deleted!` : 'Error updating color'}
-          </div>
-        )}
         <button type="submit" className="btn btn-primary mt-5">
-          Remove Color
+          Set background Color
         </button>
       </form>
     </div>
@@ -229,4 +270,4 @@ export function RemovePage(): React.ReactElement {
     <PulseLoader />
   );
 }
-export default RemovePage;
+export default BackroundColorPage;
