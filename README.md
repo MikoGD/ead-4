@@ -7,11 +7,15 @@
 Since the server and client are both separate applications they will need to be
 run separately
 
-- Run `npm install` or `yarn` to install package dependencies
-- Go into the server folder and run `yarn start`(for yarn) or `npm start` or
-  `npm run start` (for NPM)
-- In another terminal go into the client folder and run `yarn start` (for yarn)
-  or `npm start` or `npm run start` (for NPM)
+- Go into the server folder and run `npm install` or `yarn` to install package
+  dependencies
+- Run `yarn start`(for yarn) or `npm start` or `npm run start` (for NPM) to
+  run the server
+- In another terminal go into the client folder and run `npm install` or `yarn`
+  to install package dependencies.
+- Run `yarn start` (for yarn) or `npm start` or `npm run start` (for NPM) to
+  run the client
+- Navigate to `localhost:3000` to open the webpage.
 
 ## Server
 
