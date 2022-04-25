@@ -9,6 +9,7 @@ import {
   UpdatePage,
   RemovePage,
   BackroundColorPage,
+  ErrorPage,
 } from './components/pages';
 import getCookies from './cookies';
 
@@ -32,6 +33,7 @@ function App(): React.ReactElement {
         <Route path="/update" element={<UpdatePage />} />
         <Route path="/remove" element={<RemovePage />} />
         <Route path="/background" element={<BackroundColorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );
