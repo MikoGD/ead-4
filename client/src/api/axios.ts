@@ -4,6 +4,7 @@ import { Color } from '../types';
 export interface GetColorResponse {
   message: string;
   data: Color | Color[];
+  colorIndex: number;
   error?: string;
 }
 

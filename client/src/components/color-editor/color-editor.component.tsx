@@ -95,7 +95,7 @@ export function ColorEditor({
           const response = await getColorById(Number(event.target.value));
           if (!Array.isArray(response.data)) {
             setInputValues(response.data);
-            setColorIndex(response.data.colorId);
+            setColorIndex(response.colorIndex);
             cookieObj.current.colorIndex = response.data.colorId;
             setError(null);
           }
