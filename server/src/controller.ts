@@ -39,14 +39,16 @@ export async function handleGetColorById(
     return;
   }
 
-  const color = await colorsMutex.runExclusive<Color>(() => getColorsById(id));
+  const [color, colorIndex] = await colorsMutex.runExclusive<[Color, number]>(
+    () => getColorsById(id)
+  );
 
   if (!color) {
     next(createError(404, `could not find color: ${id}`));
     return;
   }
 
-  res.status(200).json({ message: 'ok', data: color });
+  res.status(200).json({ message: 'ok', data: color, colorIndex });
 }
 
 export async function handleGetColorByName(

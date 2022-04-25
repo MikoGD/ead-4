@@ -135,8 +135,11 @@ export function updateColorByName(
   return true;
 }
 
-export function getColorsById(colorId: number) {
-  return colorsIndex[colorId];
+export function getColorsById(colorId: number): [Color, number] {
+  const colorIndex = Object.values(colorsIndex).findIndex(
+    ({ colorId: currColorId }) => currColorId === colorId
+  );
+  return [colorsIndex[colorId], colorIndex];
 }
 
 export function getColorsByName(colorName: string) {
@@ -155,6 +158,10 @@ function deleteColor(colorId: number, name: string) {
  * @returns boolean
  */
 export function deleteColorById(colorId: number) {
+  if (!colorsIndex[colorId]) {
+    return false;
+  }
+
   const { name } = colorsIndex[colorId];
 
   if (!name) {
