@@ -41,14 +41,6 @@ interface ColorEditorProps {
   isSearchEditor?: boolean;
 }
 
-/*
-TODO:
-  - Update pages to use color editor
-  - Change inputs to be disabled with request error by invalid color
-  - Disable button on error
-  - Update index from colorId input
-*/
-
 export function ColorEditor({
   handleSubmit,
   isSubmitSuccess,
@@ -68,6 +60,7 @@ export function ColorEditor({
   const [colorIndex, setColorIndex] = useState(0);
   const timeout = useRef<NodeJS.Timeout | null>(null);
   const cookieObj = useRef(getCookies());
+  const [currHexString, setCurrHexString] = useState('');
 
   function setInputValues(color: Color) {
     const {
@@ -77,6 +70,9 @@ export function ColorEditor({
       rgb: { r, g, b },
       hsl: { h, s, l },
     } = color;
+
+    setCurrHexString(hexString);
+
     setValue('colorId', colorId, { shouldDirty: true });
     setValue('name', name);
     setValue('hexString', hexString, { shouldDirty: true });
@@ -100,10 +96,12 @@ export function ColorEditor({
           if (!Array.isArray(response.data)) {
             setInputValues(response.data);
             setColorIndex(response.data.colorId);
+            cookieObj.current.colorIndex = response.data.colorId;
             setError(null);
           }
         } catch (e) {
           const { message } = e as AxiosError<ColorResponse>;
+          setCurrHexString('');
           setError(`Invalid color ID - ${message}`);
         }
       }
@@ -121,6 +119,7 @@ export function ColorEditor({
       }
     } catch (e) {
       const currError = e as AxiosError<ColorResponse>;
+      setCurrHexString('');
       if (currError.response && currError.response.data.error) {
         setError(currError.response.data.error);
       } else {
@@ -161,7 +160,7 @@ export function ColorEditor({
         <div>
           <div
             className={`mb-3 ${styles.colorPreview}`}
-            style={{ backgroundColor: watch('hexString', 'value') }}
+            style={{ backgroundColor: currHexString }}
           >
             &nbsp;
           </div>
@@ -234,6 +233,7 @@ export function ColorEditor({
             {...register('name', {
               required: true,
               value: '',
+              disabled: error !== null,
             })}
             id="color-name"
             className="form-control"
@@ -247,6 +247,7 @@ export function ColorEditor({
               required: true,
               pattern: /^#([0-9A-F]{3}){1,2}$/i,
               value: '',
+              disabled: error !== null,
             })}
             id="color-hex"
             className="form-control"
@@ -275,6 +276,7 @@ export function ColorEditor({
                     min: 0,
                     max: 255,
                     value: 0,
+                    disabled: error !== null,
                   })}
                   readOnly={isSearchEditor}
                 />
@@ -304,6 +306,7 @@ export function ColorEditor({
                     min: 0,
                     max: letter === 'h' ? 359 : 100,
                     value: 0,
+                    disabled: error !== null,
                   })}
                   readOnly={isSearchEditor}
                 />
@@ -321,7 +324,11 @@ export function ColorEditor({
             {isSubmitSuccess ? SuccessText : FailedText}
           </div>
         )}
-        <button type="submit" className="btn btn-primary mt-5">
+        <button
+          type="submit"
+          className="btn btn-primary mt-5"
+          disabled={error !== null}
+        >
           {submitButtonText}
         </button>
       </form>
