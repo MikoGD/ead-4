@@ -2,12 +2,9 @@ import { NextFunction, Response } from 'express';
 import {
   addColor,
   deleteColorById,
-  deleteColorByName,
   getColors,
   getColorsById,
-  getColorsByName,
   updateColorById,
-  updateColorByName,
   colorsMutex,
   ColorsIndex,
   Color,
@@ -49,25 +46,6 @@ export async function handleGetColorById(
   }
 
   res.status(200).json({ message: 'ok', data: color, colorIndex });
-}
-
-export async function handleGetColorByName(
-  req: ColorRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const { name } = req.params;
-
-  const color = await colorsMutex.runExclusive<Color>(() =>
-    getColorsByName(name)
-  );
-
-  if (!color) {
-    next(createError(404, `could not find color: ${name}`));
-    return;
-  }
-
-  res.status(200).json({ message: 'ok', data: color });
 }
 
 export async function handleAddNewColor(req: ColorRequest, res: Response) {
@@ -130,28 +108,6 @@ export async function handleUpdateColorById(
   res.status(204).send();
 }
 
-export async function handleUpdateColorByName(
-  req: ColorRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const name = req.params.name;
-  const updatedColor = req.body;
-
-  const didUpdate = await colorsMutex.runExclusive(() =>
-    updateColorByName(name, updatedColor)
-  );
-
-  if (!didUpdate) {
-    next(
-      createError(404, `could not find color to update from name of ${name}`)
-    );
-    return;
-  }
-
-  res.status(204).json({});
-}
-
 export async function handleDeleteColorById(
   req: ColorRequest,
   res: Response,
@@ -168,25 +124,6 @@ export async function handleDeleteColorById(
 
   if (!isDeleted) {
     next(createError(404, `could not find color of id ${id} to delete`));
-    return;
-  }
-
-  res.status(204).json({});
-}
-
-export async function handleDeleteColorByName(
-  req: ColorRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const name = req.params.name;
-
-  const isDeleted = colorsMutex.runExclusive(() =>
-    deleteColorByName(name.toLowerCase())
-  );
-
-  if (!isDeleted) {
-    next(createError(404, `could not find color of name ${name} to delete`));
     return;
   }
 

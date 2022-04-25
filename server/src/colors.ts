@@ -23,12 +23,7 @@ export interface ColorsIndex {
   [id: number]: Color;
 }
 
-interface ColorNameIndex {
-  [name: string]: Color;
-}
-
 const colorsIndex: ColorsIndex = {};
-const colorsNameIndex: ColorNameIndex = {};
 export const colorsMutex = new Mutex();
 let currId = 0;
 
@@ -49,7 +44,6 @@ function loadColorsJSON() {
     }
 
     colorsIndex[colorId] = color;
-    colorsNameIndex[name.toLowerCase()] = color;
   });
 }
 
@@ -67,14 +61,12 @@ export function addColor(newColor: Omit<Color, 'colorId'>) {
   const newColorWithId: Color = { colorId: currId, ...newColor };
 
   colorsIndex[newId] = newColorWithId;
-  colorsNameIndex[newColor.name.toLowerCase()] = newColorWithId;
 
   return newColorWithId;
 }
 
-function updateColor(colorId: number, name: string, updatedColor: Color) {
+function updateColor(colorId: number, updatedColor: Color) {
   colorsIndex[colorId] = updatedColor;
-  colorsNameIndex[name] = updatedColor;
 }
 
 /**
@@ -87,8 +79,6 @@ export function updateColorById(colorId: number, updatedColorBody: ColorsBody) {
     return false;
   }
 
-  // No chance of undefine due to middleware
-  const colorNameIndex = updatedColorBody.colorNameIndex!;
   const updatedColor: Partial<ColorsBody> = {
     ...colorToUpdate,
     ...updatedColorBody,
@@ -96,42 +86,8 @@ export function updateColorById(colorId: number, updatedColorBody: ColorsBody) {
 
   delete updatedColor.colorNameIndex;
 
-  updateColor(
-    (updatedColor as Color).colorId,
-    colorNameIndex,
-    updatedColor as Color
-  );
+  updateColor((updatedColor as Color).colorId, updatedColor as Color);
 
-  return true;
-}
-
-/**
- * Returns true if color was updated else false
- */
-export function updateColorByName(
-  colorName: string,
-  updatedColorBody: ColorsBody
-) {
-  const colorToUpdate = colorsNameIndex[colorName];
-
-  if (!colorToUpdate) {
-    return false;
-  }
-
-  // No chance of undefine due to middleware
-  const colorNameIndex = updatedColorBody.colorNameIndex!;
-  const updatedColor: Partial<ColorsBody> = {
-    ...colorToUpdate,
-    ...updatedColorBody,
-  };
-
-  delete updatedColor.colorNameIndex;
-
-  updateColor(
-    (updatedColorBody as Color).colorId,
-    colorNameIndex,
-    updatedColorBody as Color
-  );
   return true;
 }
 
@@ -142,13 +98,8 @@ export function getColorsById(colorId: number): [Color, number] {
   return [colorsIndex[colorId], colorIndex];
 }
 
-export function getColorsByName(colorName: string) {
-  return colorsNameIndex[colorName];
-}
-
-function deleteColor(colorId: number, name: string) {
+function deleteColor(colorId: number) {
   delete colorsIndex[colorId];
-  delete colorsNameIndex[name];
 }
 
 /**
@@ -168,27 +119,7 @@ export function deleteColorById(colorId: number) {
     return false;
   }
 
-  deleteColor(colorId, name.toLowerCase());
-
-  return true;
-}
-
-/**
- * If color found and deleted return true else false
- *
- * @param name
- * @returns boolean
- */
-export function deleteColorByName(name: string) {
-  const color = colorsNameIndex[name];
-
-  if (!color) {
-    return false;
-  }
-
-  const { colorId } = colorsNameIndex[name];
-
-  deleteColor(colorId, name);
+  deleteColor(colorId);
 
   return true;
 }
