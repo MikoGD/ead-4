@@ -51,9 +51,6 @@ export function getColors() {
   return colorsIndex;
 }
 
-/* TODO:
-- Update to handle colors.JSON file update 
-*/
 export function addColor(newColor: Omit<Color, 'colorId'>) {
   currId += 1;
 
