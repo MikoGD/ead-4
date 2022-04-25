@@ -28,6 +28,13 @@ export async function getColorById(colorId: number) {
   return response.data;
 }
 
+export async function getColorByIndex(colorIndex: number) {
+  const response = await colorAxios.get<GetColorResponse>(
+    `/index/${colorIndex}`
+  );
+  return response.data;
+}
+
 export async function addColor(newColor: Omit<Color, 'colorId'>) {
   const response = await colorAxios.post<PostColorResponse>('/', newColor);
   return response.data;

@@ -9,7 +9,7 @@ import PulseLoader from 'react-spinners/PulseLoader';
 import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import styles from './color-editor.module.scss';
-import { getColorById } from '../../api/axios';
+import { getColorById, getColorByIndex } from '../../api/axios';
 import { Color } from '../../types';
 import { ColorResponse } from '../../api/hooks';
 import getCookies, { ColorCookie } from '../../cookies';
@@ -111,7 +111,7 @@ export function ColorEditor({
   async function onIndexClick(amount: number) {
     const newIndex = colorIndex + amount;
     try {
-      const color = await getColorById(newIndex);
+      const color = await getColorByIndex(newIndex);
       setColorIndex(newIndex);
       cookieObj.current.colorIndex = newIndex;
       if (!Array.isArray(color.data)) {
@@ -131,7 +131,7 @@ export function ColorEditor({
   useEffect(() => {
     setColorIndex(cookieObj.current.colorIndex);
 
-    getColorById(cookieObj.current.colorIndex)
+    getColorByIndex(cookieObj.current.colorIndex)
       .then((response) => {
         if (!Array.isArray(response.data)) {
           setInputValues(response.data);
