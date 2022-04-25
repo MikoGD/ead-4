@@ -5,6 +5,7 @@ import {
   handleDeleteColorByName,
   handleGetAllColors,
   handleGetColorById,
+  handleGetColorByIndex,
   handleGetColorByName,
   handleUpdateColorById,
   handleUpdateColorByName,
@@ -28,6 +29,10 @@ function addColorNameIndexMiddleware(
 
 router.get<ColorsParams, any, ColorsBody>('/', handleGetAllColors);
 router.get<ColorsParams, any, ColorsBody>('/id/:id', handleGetColorById);
+router.get<ColorsParams, any, ColorsBody>(
+  '/index/:index',
+  handleGetColorByIndex
+);
 router.get<ColorsParams, any, ColorsBody>('/name/:name', handleGetColorByName);
 
 router.post<ColorsParams, any, ColorsBody>('/', handleAddNewColor);
@@ -44,6 +49,9 @@ router.put<ColorsParams, any, ColorsBody>(
 );
 
 router.delete<ColorsParams, any, ColorsBody>('/id/:id', handleDeleteColorById);
-router.delete<ColorsParams, any, ColorsBody>('/name/:name', handleDeleteColorByName);
+router.delete<ColorsParams, any, ColorsBody>(
+  '/name/:name',
+  handleDeleteColorByName
+);
 
 export default router;
