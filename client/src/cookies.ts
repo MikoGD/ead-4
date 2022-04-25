@@ -1,4 +1,4 @@
-interface ColorCookie {
+export interface ColorCookie {
   expires: Date;
   backgroundColorIndex: number;
   colorIndex: number;
