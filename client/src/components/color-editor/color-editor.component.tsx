@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { AxiosError } from 'axios';
-import { useForm, UseFormHandleSubmit } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import styles from './color-editor.module.scss';
 import { getColorById } from '../../api/axios';
 import { Color } from '../../types';
@@ -154,7 +154,7 @@ export function ColorEditor({
       : submitFailedText(watch());
 
   return isInitialColorLoaded ? (
-    <div className="container mt-5 d-flex justify-content-between bg-white p-3">
+    <div className="container d-flex justify-content-between bg-white p-3">
       <div className="d-flex flex-column w-50">
         <h2>Color Preview</h2>
         <div>
@@ -206,7 +206,7 @@ export function ColorEditor({
       <form
         onSubmit={(event) => {
           // Due to not calling onSubmit directly a function is needed to pass a
-          // callback into submit to also give onSubmit the form event
+          // callback into submit to and also give onSubmit the form event
           function passCallbackToOnSubmit(cb: (colorInputs: Inputs) => void) {
             onSubmit(cb)(event);
           }

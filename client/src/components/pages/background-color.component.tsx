@@ -17,14 +17,19 @@ function BackgroundPage(): ReactElement {
   }
 
   return (
-    <ColorEditor
-      handleSubmit={handleSubmit}
-      isSubmitSuccess={null}
-      submitButtonText="Set Background Color"
-      submitSuccessText=""
-      submitFailedText=""
-      isSearchEditor
-    />
+    <>
+      <div className="bg-white mx-auto w-50 p-1 my-2 d-flex justify-content-center align-items-center">
+        <h2>Change background color</h2>
+      </div>
+      <ColorEditor
+        handleSubmit={handleSubmit}
+        isSubmitSuccess={null}
+        submitButtonText="Set Background Color"
+        submitSuccessText=""
+        submitFailedText=""
+        isSearchEditor
+      />
+    </>
   );
 }
 

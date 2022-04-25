@@ -99,117 +99,122 @@ export function AddPage(): React.ReactElement {
   }
 
   return (
-    <div className="container mt-5 d-flex justify-content-between bg-white p-3">
-      <div className="d-flex flex-column w-50">
-        <h2>Color Preview</h2>
-        <div>
-          <div
-            className={`mb-3 ${styles.colorPreview}`}
-            style={{ backgroundColor: watch().hexString }}
-          >
-            &nbsp;
-          </div>
-        </div>
+    <>
+      <div className="bg-white mx-auto w-25 p-1 my-2 d-flex justify-content-center align-items-center">
+        <h2>Add color</h2>
       </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="d-flex flex-column container"
-      >
-        <label className="form-label" htmlFor="color-name">
-          <h3>Color Name:</h3>
-          <input
-            {...register('name', { required: true, value: '' })}
-            id="color-name"
-            className="form-control"
-          />
-        </label>
-        <label className="form-label" htmlFor="color-hex">
-          <h3>Hex:</h3>
-          <input
-            {...register('hexString', {
-              required: true,
-              pattern: /^#([0-9A-F]{3}){1,2}$/i,
-              value: '',
-              onChange: onHexChange,
-            })}
-            id="color-hex"
-            className="form-control"
-          />
-        </label>
-        <div>
-          <h4>RGB</h4>
-          <div
-            id="rgb-container"
-            className="d-flex justify-content-between space-2"
-          >
-            {['r', 'g', 'b'].map((letter) => (
-              <label
-                key={letter}
-                className="form-label"
-                htmlFor={`color-rgb-${letter}`}
-              >
-                <p>{`${letter.toUpperCase()}:`}</p>
-                <input
-                  className="form-control"
-                  id={`color-rgb-${letter}`}
-                  {...register(letter as 'r' | 'g' | 'b', {
-                    required: true,
-                    valueAsNumber: true,
-                    min: 0,
-                    max: 255,
-                    value: 0,
-                    onChange: onRGBChange,
-                  })}
-                />
-              </label>
-            ))}
+      <div className="container d-flex justify-content-between bg-white p-3">
+        <div className="d-flex flex-column w-50">
+          <h2>Color Preview</h2>
+          <div>
+            <div
+              className={`mb-3 ${styles.colorPreview}`}
+              style={{ backgroundColor: watch().hexString }}
+            >
+              &nbsp;
+            </div>
           </div>
         </div>
-        <div>
-          <h4>HSL</h4>
-          <div
-            id="hsl-container"
-            className="d-flex justify-content-between space-2"
-          >
-            {['h', 's', 'l'].map((letter) => (
-              <label
-                key={letter}
-                className="form-label"
-                htmlFor={`color-hsl-${letter}`}
-              >
-                <p>{`${letter.toUpperCase()}:`}</p>
-                <input
-                  className="form-control"
-                  id={`color-hsl-${letter}`}
-                  {...register(letter as 'h' | 's' | 'l', {
-                    required: true,
-                    valueAsNumber: true,
-                    min: 0,
-                    max: letter === 'h' ? 359 : 100,
-                    value: 0,
-                    onChange: onHSLChange,
-                  })}
-                />
-              </label>
-            ))}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="d-flex flex-column container"
+        >
+          <label className="form-label" htmlFor="color-name">
+            <h3>Color Name:</h3>
+            <input
+              {...register('name', { required: true, value: '' })}
+              id="color-name"
+              className="form-control"
+            />
+          </label>
+          <label className="form-label" htmlFor="color-hex">
+            <h3>Hex:</h3>
+            <input
+              {...register('hexString', {
+                required: true,
+                pattern: /^#([0-9A-F]{3}){1,2}$/i,
+                value: '',
+                onChange: onHexChange,
+              })}
+              id="color-hex"
+              className="form-control"
+            />
+          </label>
+          <div>
+            <h4>RGB</h4>
+            <div
+              id="rgb-container"
+              className="d-flex justify-content-between space-2"
+            >
+              {['r', 'g', 'b'].map((letter) => (
+                <label
+                  key={letter}
+                  className="form-label"
+                  htmlFor={`color-rgb-${letter}`}
+                >
+                  <p>{`${letter.toUpperCase()}:`}</p>
+                  <input
+                    className="form-control"
+                    id={`color-rgb-${letter}`}
+                    {...register(letter as 'r' | 'g' | 'b', {
+                      required: true,
+                      valueAsNumber: true,
+                      min: 0,
+                      max: 255,
+                      value: 0,
+                      onChange: onRGBChange,
+                    })}
+                  />
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-        {newColorUrl !== null && (
-          <div
-            className={`alert ${
-              newColorUrl !== 'error' ? 'alert-success' : 'alert-danger'
-            }`}
-          >
-            {newColorUrl !== 'error'
-              ? `Color added: ${newColorUrl}`
-              : 'Error adding color'}
+          <div>
+            <h4>HSL</h4>
+            <div
+              id="hsl-container"
+              className="d-flex justify-content-between space-2"
+            >
+              {['h', 's', 'l'].map((letter) => (
+                <label
+                  key={letter}
+                  className="form-label"
+                  htmlFor={`color-hsl-${letter}`}
+                >
+                  <p>{`${letter.toUpperCase()}:`}</p>
+                  <input
+                    className="form-control"
+                    id={`color-hsl-${letter}`}
+                    {...register(letter as 'h' | 's' | 'l', {
+                      required: true,
+                      valueAsNumber: true,
+                      min: 0,
+                      max: letter === 'h' ? 359 : 100,
+                      value: 0,
+                      onChange: onHSLChange,
+                    })}
+                  />
+                </label>
+              ))}
+            </div>
           </div>
-        )}
-        <button type="submit" className="btn btn-primary mt-5">
-          Add Color
-        </button>
-      </form>
-    </div>
+          {newColorUrl !== null && (
+            <div
+              className={`alert ${
+                newColorUrl !== 'error' ? 'alert-success' : 'alert-danger'
+              }`}
+            >
+              {newColorUrl !== 'error'
+                ? `Color added: ${newColorUrl}`
+                : 'Error adding color'}
+            </div>
+          )}
+          <button type="submit" className="btn btn-primary mt-5">
+            Add Color
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 export default AddPage;

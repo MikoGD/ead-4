@@ -46,17 +46,22 @@ function UpdatePage(): ReactElement {
   }
 
   return (
-    <ColorEditor
-      handleSubmit={handleSubmit}
-      isSubmitSuccess={didUpdateSucceed}
-      submitButtonText="Update color"
-      submitSuccessText={(colorInputs: Inputs) =>
-        `Updated color: ${colorInputs.colorId}`
-      }
-      submitFailedText={(colorInputs: Inputs) =>
-        `Failed to update color: ${colorInputs.colorId}`
-      }
-    />
+    <>
+      <div className="bg-white mx-auto w-25 p-1 my-2 d-flex justify-content-center align-items-center">
+        <h2>Update color</h2>
+      </div>
+      <ColorEditor
+        handleSubmit={handleSubmit}
+        isSubmitSuccess={didUpdateSucceed}
+        submitButtonText="Update color"
+        submitSuccessText={(colorInputs: Inputs) =>
+          `Updated color: ${colorInputs.colorId}`
+        }
+        submitFailedText={(colorInputs: Inputs) =>
+          `Failed to update color: ${colorInputs.colorId}`
+        }
+      />
+    </>
   );
 }
 

@@ -18,37 +18,42 @@ export function Display(): React.ReactElement {
   }, [response]);
 
   return colors || error ? (
-    <div className="d-flex justify-content-between flex-wrap container bg-white">
-      {error && (
-        <div className="w-100 text-center">
-          <h2 className="text-danger">{error}</h2>
-        </div>
-      )}
-      {colors &&
-        colors.map((color) => (
-          <div key={color.colorId} className="p-2 w-25">
-            <div
-              style={{ backgroundColor: color.hexString }}
-              className={styles.colorDisplay}
-            >
-              &nbsp;
-            </div>
-            <h2>ID: {color.colorId}</h2>
-            <h3>{color.name}</h3>
-            <p>Hex: {color.hexString}</p>
-            <div className="d-flex justify-content-between w-50">
-              <div>{`R: ${color.rgb.r}`}</div>
-              <div>{`G: ${color.rgb.g}`}</div>
-              <div>{`B: ${color.rgb.b}`}</div>
-            </div>
-            <div className="d-flex justify-content-between w-50">
-              <div>{`H: ${color.hsl.h}`}</div>
-              <div>{`S: ${color.hsl.s}`}</div>
-              <div>{`L: ${color.hsl.l}`}</div>
-            </div>
+    <>
+      <div className="bg-white mx-auto w-25 p-1 my-2 d-flex justify-content-center align-items-center">
+        <h2>Display</h2>
+      </div>
+      <div className="d-flex justify-content-between flex-wrap container bg-white">
+        {error && (
+          <div className="w-100 text-center">
+            <h2 className="text-danger">{error}</h2>
           </div>
-        ))}
-    </div>
+        )}
+        {colors &&
+          colors.map((color) => (
+            <div key={color.colorId} className="p-2 w-25">
+              <div
+                style={{ backgroundColor: color.hexString }}
+                className={styles.colorDisplay}
+              >
+                &nbsp;
+              </div>
+              <h2>ID: {color.colorId}</h2>
+              <h3>{color.name}</h3>
+              <p>Hex: {color.hexString}</p>
+              <div className="d-flex justify-content-between w-50">
+                <div>{`R: ${color.rgb.r}`}</div>
+                <div>{`G: ${color.rgb.g}`}</div>
+                <div>{`B: ${color.rgb.b}`}</div>
+              </div>
+              <div className="d-flex justify-content-between w-50">
+                <div>{`H: ${color.hsl.h}`}</div>
+                <div>{`S: ${color.hsl.s}`}</div>
+                <div>{`L: ${color.hsl.l}`}</div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </>
   ) : (
     <div className="w-100 d-flex justify-content-center align-items-center">
       <PulseLoader />

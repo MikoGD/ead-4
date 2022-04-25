@@ -28,14 +28,19 @@ function RemovePage(): ReactElement {
   }
 
   return (
-    <ColorEditor
-      handleSubmit={handleSubmit}
-      isSubmitSuccess={didColorDelete}
-      submitButtonText="Remove Color"
-      submitSuccessText={({ colorId }: Inputs) => `Deleted color: ${colorId}`}
-      submitFailedText="Failed to delete color"
-      isSearchEditor
-    />
+    <>
+      <div className="bg-white mx-auto w-25 p-1 my-2 d-flex justify-content-center align-items-center">
+        <h2>Remove color</h2>
+      </div>
+      <ColorEditor
+        handleSubmit={handleSubmit}
+        isSubmitSuccess={didColorDelete}
+        submitButtonText="Remove Color"
+        submitSuccessText={({ colorId }: Inputs) => `Deleted color: ${colorId}`}
+        submitFailedText="Failed to delete color"
+        isSearchEditor
+      />
+    </>
   );
 }
 
